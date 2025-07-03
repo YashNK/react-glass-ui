@@ -1,0 +1,49 @@
+.glass-ui-input-container {
+  display: flex;
+  flex-direction: column;
+}
+.glass-ui-input-label {
+  position: relative;
+  margin: 0 !important;
+}
+.glass-ui-input-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  color: white;
+  z-index: 2;
+}
+.glass-input {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  margin: 0;
+  font-size: 12px;
+  position: absolute;
+  color: white;
+  background: none;
+  border: none;
+  outline: none;
+}
+.glass-input::placeholder {
+  opacity: 0.65;
+  color: white;
+}
+.glass-input[type="number"] {
+  -moz-appearance: textfield;
+}
+.glass-input[type="number"]::-webkit-outer-spin-button,
+.glass-input[type="number"]::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+input[type="file"] {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  position: absolute;
+}
+.file-type-placeholder {
+  font-size: 12px;
+  user-select: none;
+}

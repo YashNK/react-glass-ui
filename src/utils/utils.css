@@ -1,0 +1,44 @@
+.glass-ui-svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+.glass-ui-outer-light {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  position: absolute;
+  transition: "500ms ease-in-out";
+}
+.glass-ui-distortion-layer {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.glass-ui-background-layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+.glass-ui-inner-light {
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transition: "500ms ease-in-out";
+}
+.glass-ui-border-layer {
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}

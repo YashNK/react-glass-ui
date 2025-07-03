@@ -1,0 +1,15 @@
+.glass-ui-container {
+  position: relative;
+  word-break: break-all;
+  user-select: none;
+}
+.glass-ui-card-content {
+  position: relative;
+  color: white;
+  z-index: 3;
+}
+.content-center {
+  text-align: center;
+  left: 50%;
+  transform: translate(-50%);
+}

@@ -1,0 +1,50 @@
+{
+  "name": "react-glass-ui",
+  "version": "1.0.2",
+  "author": "Yash Kamnani",
+  "license": "MIT",
+  "description": "A customizable React component library for creating elegant glassmorphism interfaces. It provides flexible, interactive UI elements, such as cards, buttons, and inputs, with effects including blur, saturation, distortion, light glow, and hover.",
+  "keywords": [
+    "react",
+    "react-glass",
+    "react-glass-ui",
+    "glass-ui",
+    "liquid-glass",
+    "glassmorphism",
+    "blur-effect",
+    "glass-card",
+    "glass-button",
+    "glass-input",
+    "glass-distortion"
+  ],
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YashNK/react-glass-ui"
+  },
+  "exports": {
+    "require": "./dist/index.cjs",
+    "import": "./dist/index.mjs"
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.44",
+    "@types/react-dom": "^18.2.18",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  }
+}
