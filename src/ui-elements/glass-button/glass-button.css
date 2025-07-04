@@ -3,7 +3,6 @@
   height: 100%;
   z-index: 2;
   position: relative;
-  color: white;
   cursor: pointer;
 }
 .glass-button {
@@ -11,7 +10,6 @@
   padding: 0;
   position: absolute;
   top: 0;
-  color: white;
   background: none;
   border: none;
   outline: none !important;

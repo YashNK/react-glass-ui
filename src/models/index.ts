@@ -1,6 +1,6 @@
 interface CommonGlassProps {
   /** A unique identifier. */
-  id: string;
+  id?: string;
   /** Optional React key. */
   key?: string;
   /** Input name attribute. */

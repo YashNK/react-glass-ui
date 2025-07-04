@@ -104,7 +104,6 @@ export const GlassCard: React.FunctionComponent<GlassCardProps> = (
         }}
       >
         {renderLayers(
-          cardProps.id,
           cardProps.blur ? cardProps.blur : 1,
           cardProps.borderRadius ? cardProps.borderRadius : 8,
           cardProps.saturation ? cardProps.saturation : 100,

@@ -93,6 +93,7 @@ export const GlassButton: React.FunctionComponent<GlassButtonProps> = (
         onMouseEnter={handleOnMouseEnter}
         onMouseLeave={handleOnMouseLeave}
         style={{
+          color: buttonProps.color,
           width: buttonProps.width,
           height,
           borderRadius: buttonProps.borderRadius,
@@ -105,7 +106,6 @@ export const GlassButton: React.FunctionComponent<GlassButtonProps> = (
         }}
       >
         {renderLayers(
-          buttonProps.id,
           buttonProps.blur ? buttonProps.blur : 1,
           buttonProps.borderRadius ? buttonProps.borderRadius : 8,
           buttonProps.saturation ? buttonProps.saturation : 100,
@@ -132,6 +132,9 @@ export const GlassButton: React.FunctionComponent<GlassButtonProps> = (
           onClick={buttonProps.onClick}
         >
           <button
+            style={{
+              color: buttonProps.color,
+            }}
             className={`glass-button ${
               buttonProps.contentCenter ? "content-center" : ""
             }`}

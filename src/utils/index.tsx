@@ -1,9 +1,9 @@
+import { useMemo } from "react";
 import { distortionMap } from "../assets/normal-maps";
 import type { GlassStyleModel } from "../models";
 import "./utils.css";
 
 export const renderLayers = (
-  id: string,
   blur: number,
   borderRadius: number,
   saturation: number,
@@ -16,6 +16,8 @@ export const renderLayers = (
   borderColor: string,
   borderSize: number
 ) => {
+  const id = useMemo(() => crypto.randomUUID(), []);
+
   return (
     <>
       <svg

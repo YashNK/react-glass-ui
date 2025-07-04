@@ -107,6 +107,7 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
         onMouseEnter={handleOnMouseEnter}
         onMouseLeave={handleOnMouseLeave}
         style={{
+          color: inputProps.color,
           width: inputProps.width,
           height,
           borderRadius: inputProps.borderRadius,
@@ -119,7 +120,6 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
         }}
       >
         {renderLayers(
-          inputProps.id,
           inputProps.blur ? inputProps.blur : 1,
           inputProps.borderRadius ? inputProps.borderRadius : 8,
           inputProps.saturation ? inputProps.saturation : 100,
@@ -157,11 +157,15 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
             }`}
             onChange={(e) => (onChange ? onChange(e) : {})}
             style={{
+              color: inputProps.color,
               padding: inputProps.padding,
             }}
           />
           {type === "file" ? (
             <span
+              style={{
+                color: inputProps.color,
+              }}
               className={`file-type-placeholder ${
                 inputProps.contentCenter ? "content-center" : ""
               }`}
