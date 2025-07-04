@@ -1,6 +1,6 @@
 {
   "name": "react-glass-ui",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "Yash Kamnani",
   "license": "MIT",
   "description": "A customizable React component library for creating elegant glassmorphism interfaces. It provides flexible, interactive UI elements, such as cards, buttons, and inputs, with effects including blur, saturation, distortion, light glow, and hover.",
