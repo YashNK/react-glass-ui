@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   glassDefaultProps,
   type GlassInputProps,
   type GlassStyleModel,
 } from "../../models";
-import { renderLayers } from "../../utils";
+import { calculateHoverEffect, renderLayers } from "../../utils";
 import "./glass-input.css";
 
 export const GlassInput: React.FunctionComponent<GlassInputProps> = (
@@ -24,6 +24,7 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
     onChange,
     ...inputProps
   } = { ...glassDefaultProps, ...props };
+  const id = useMemo(() => inputProps.id ?? crypto.randomUUID(), []);
   const glassInputContainerRef = useRef<HTMLDivElement>(null);
   const glassInputContentRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -34,55 +35,45 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
   });
 
   useEffect(() => {
-    const card = glassInputContainerRef.current;
-    if (!card || (inputProps.flexibility && inputProps.flexibility <= 0))
-      return;
+    const input = glassInputContainerRef.current;
+    if (!input) return;
     const handleMouseMove = (e: MouseEvent) => {
-      if (inputProps.flexibility && inputProps.flexibility > 0) {
-        const rect = card.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const dx = e.clientX - centerX;
-        const dy = e.clientY - centerY;
-        const angle = Math.atan2(dy, dx);
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const scaleFactor = inputProps.flexibility / 100;
-        const translateX = Math.cos(angle) * distance * scaleFactor;
-        const translateY = Math.sin(angle) * distance * scaleFactor;
-        let stretchX = 0;
-        let stretchY = 0;
-        if (inputProps.onHoverScale) {
-          stretchX =
-            inputProps.onHoverScale + Math.abs(translateX) / rect.width;
-          stretchY =
-            inputProps.onHoverScale + Math.abs(translateY) / rect.height;
-        }
-        const shadowX = -translateX * 0.02;
-        const shadowY = -translateY * 0.02;
-        setStyle({
-          transform: `translate(${translateX}px, ${translateY}px) scale(${stretchX}, ${stretchY})`,
-          innerBoxShadow: `inset ${shadowX}px ${shadowY}px ${inputProps.innerLightBlur}px ${inputProps.innerLightSpread}px ${inputProps.innerLightColor}`,
-          outerBoxShadow: `0 0 ${inputProps.outerLightBlur}px ${inputProps.outerLightSpread}px ${inputProps.outerLightColor}`,
-        });
-      }
+      const result = calculateHoverEffect(e, input, inputProps);
+      setStyle((prev) => ({
+        ...prev,
+        ...result,
+      }));
     };
     const reset = () => {
-      if (inputProps.flexibility && inputProps.flexibility > 0) {
-        setIsHovered(false);
-        setStyle({
-          transform: "none",
-          innerBoxShadow: `inset 0 0 ${inputProps.innerLightBlur}px ${inputProps.innerLightSpread}px ${inputProps.innerLightColor}`,
-          outerBoxShadow: `0 0 ${inputProps.outerLightBlur}px ${inputProps.outerLightSpread}px ${inputProps.outerLightColor}`,
-        });
-      }
+      setIsHovered(false);
+      setStyle({
+        transform: "none",
+        innerBoxShadow: `inset 0 0 ${inputProps.innerLightBlur}px ${inputProps.innerLightSpread}px ${inputProps.innerLightColor}`,
+        outerBoxShadow: `0 0 ${inputProps.outerLightBlur}px ${inputProps.outerLightSpread}px ${inputProps.outerLightColor}`,
+      });
     };
-    card.addEventListener("mousemove", handleMouseMove);
-    card.addEventListener("mouseleave", reset);
+    input.addEventListener("mousemove", handleMouseMove);
+    input.addEventListener("mouseleave", reset);
     return () => {
-      card.removeEventListener("mousemove", handleMouseMove);
-      card.removeEventListener("mouseleave", reset);
+      input.removeEventListener("mousemove", handleMouseMove);
+      input.removeEventListener("mouseleave", reset);
     };
-  }, [inputProps.flexibility, inputProps.onHoverScale, style]);
+  }, [style]);
+
+  useEffect(() => {
+    setStyle((prev) => ({
+      ...prev,
+      innerBoxShadow: `inset 0 0 ${inputProps.innerLightBlur}px ${inputProps.innerLightSpread}px ${inputProps.innerLightColor}`,
+      outerBoxShadow: `0 0 ${inputProps.outerLightBlur}px ${inputProps.outerLightSpread}px ${inputProps.outerLightColor}`,
+    }));
+  }, [
+    inputProps.innerLightBlur,
+    inputProps.innerLightSpread,
+    inputProps.innerLightColor,
+    inputProps.outerLightBlur,
+    inputProps.outerLightSpread,
+    inputProps.outerLightColor,
+  ]);
 
   const handleOnMouseEnter = () => {
     setIsHovered(true);
@@ -92,58 +83,147 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
     setIsHovered(false);
   };
 
-  return (
-    <div
-      id={inputProps.id}
-      key={inputProps.key}
-      className={`glass-ui-input-container ${inputProps.className}`}
-    >
-      <label className="glass-ui-input-label" style={{ color: labelColor }}>
-        {label}
-      </label>
-      <div
-        ref={glassInputContainerRef}
-        className="glass-ui-container"
-        onMouseEnter={handleOnMouseEnter}
-        onMouseLeave={handleOnMouseLeave}
-        style={{
-          color: inputProps.color,
-          width: inputProps.width,
-          height,
-          borderRadius: inputProps.borderRadius,
-          transform: style.transform,
-          transition: isHovered
-            ? "transform 80ms ease-out"
-            : "transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5)",
-          willChange: "transform",
-          zIndex: inputProps.zIndex,
-        }}
-      >
-        {renderLayers(
-          inputProps.blur ? inputProps.blur : 1,
-          inputProps.borderRadius ? inputProps.borderRadius : 8,
-          inputProps.saturation ? inputProps.saturation : 100,
-          inputProps.distortion ? inputProps.distortion : 50,
-          inputProps.backgroundColor ? inputProps.backgroundColor : "white",
-          inputProps.backgroundOpacity ? inputProps.backgroundOpacity : 0,
-          style,
-          inputProps.innerLightOpacity ? inputProps.innerLightOpacity : 0.2,
-          inputProps.outerLightOpacity ? inputProps.outerLightOpacity : 0.2,
-          inputProps.borderColor
-            ? inputProps.borderColor
-            : inputProps.innerLightColor
-            ? inputProps.innerLightColor
-            : "white",
-          inputProps.borderSize ? inputProps.borderSize : 1
-        )}
+  const renderInput = () => {
+    if (type === "range") {
+      const trackRef = useRef<HTMLDivElement>(null);
+      const [dragging, setDragging] = useState(false);
+      const [rangeValue, setRangeValue] = useState(inputProps.value ?? 50);
+      const min = inputProps.min ?? 0;
+      const max = inputProps.max ?? 100;
+      const step = inputProps.step ?? 1;
+      const percent = Math.ceil(((rangeValue - min) / (max - min)) * 100);
+
+      useEffect(() => {
+        if (dragging) {
+          window.addEventListener("mousemove", handleMouseMove);
+          window.addEventListener("mouseup", handleMouseUp);
+        } else {
+          window.removeEventListener("mousemove", handleMouseMove);
+          window.removeEventListener("mouseup", handleMouseUp);
+        }
+        return () => {
+          window.removeEventListener("mousemove", handleMouseMove);
+          window.removeEventListener("mouseup", handleMouseUp);
+        };
+      }, [dragging]);
+
+      const handleMouseDown = (e: React.MouseEvent) => {
+        setDragging(true);
+        updatePosition(e.clientX);
+      };
+
+      const handleMouseMove = (e: MouseEvent) => {
+        if (dragging) updatePosition(e.clientX);
+      };
+
+      const handleMouseUp = () => setDragging(false);
+
+      const updatePosition = (clientX: number) => {
+        const track = trackRef.current;
+        if (!track) return;
+        const rect = track.getBoundingClientRect();
+        const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+        const percent = x / rect.width;
+
+        const clampedValue = min + percent * (max - min);
+        const steppedValue = Math.round(clampedValue / step) * step;
+        const newValue = Math.min(Math.max(steppedValue, min), max);
+
+        setRangeValue(newValue);
+        onChange?.({
+          target: { value: newValue, name: inputProps.name },
+        } as any);
+      };
+
+      return (
         <div
-          ref={glassInputContentRef}
-          className="glass-ui-input-content"
-          style={{
-            borderRadius: inputProps.borderRadius,
-          }}
+          className="glass-range-track"
+          ref={trackRef}
+          onMouseDown={handleMouseDown}
         >
+          <div
+            className="glass-range-fill"
+            style={{
+              width: `${percent}%`,
+              backgroundColor: inputProps.backgroundColor
+                ? inputProps.backgroundColor
+                : inputProps.borderColor
+                ? inputProps.borderColor
+                : "white",
+              opacity: dragging ? 0.7 : 1,
+            }}
+          />
+          <div
+            className="glass-range-after-fill"
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: `calc(${percent > 96 ? 96 : percent}% + 30px)`,
+              width: `calc(${100 - percent}% - 30px)`,
+              backgroundColor: "rgba(255, 255, 255, 0.202)",
+              pointerEvents: "none",
+            }}
+          />
+          <div
+            className="glass-range-thumb"
+            style={{
+              left: `calc(${percent > 96 ? 96 : percent}% + 17px)`,
+              transform: `translate(-50%, -50%) scale(${dragging ? 1.4 : 1})`,
+              borderRadius: dragging
+                ? inputProps.borderRadius
+                  ? inputProps.borderRadius + 1
+                  : 2
+                : inputProps.borderRadius,
+              filter: `url(#${id}-filter)`,
+              backdropFilter: `blur(${inputProps.blur}px) saturate(${inputProps.saturation}%)`,
+              WebkitBackdropFilter: `blur(${inputProps.blur}px) saturate(${inputProps.saturation}%)`,
+            }}
+            onMouseDown={handleMouseDown}
+          />
+          <div
+            className="glass-range-thumb glass-range-border"
+            style={{
+              left: `calc(${percent > 96 ? 96 : percent}% + 17px)`,
+              border: `${inputProps.borderSize ?? 1}px solid ${
+                inputProps.borderColor ?? "white"
+              }`,
+              transform: `translate(-50%, -50%) scale(${dragging ? 1.4 : 1})`,
+              borderRadius: dragging
+                ? inputProps.borderRadius
+                  ? inputProps.borderRadius + 1
+                  : 2
+                : inputProps.borderRadius,
+            }}
+          />
+          {percent > 96 ? (
+            <div
+              className="glass-range-thumb"
+              style={{
+                left: `calc(96% + 17px)`,
+                transform: `translate(-50%, -50%) scale(${dragging ? 1.4 : 1})`,
+                backgroundColor: inputProps.backgroundColor
+                  ? inputProps.backgroundColor
+                  : inputProps.borderColor
+                  ? inputProps.borderColor
+                  : "white",
+                borderRadius: dragging
+                  ? inputProps.borderRadius
+                    ? inputProps.borderRadius + 1
+                    : 2
+                  : inputProps.borderRadius,
+              }}
+            />
+          ) : (
+            ""
+          )}
+        </div>
+      );
+    } else {
+      return (
+        <>
           <input
+            value={inputProps.value}
             type={type}
             name={inputProps.name}
             placeholder={placeholder}
@@ -168,6 +248,12 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
               }}
               className={`file-type-placeholder ${
                 inputProps.contentCenter ? "content-center" : ""
+              } ${inputProps.itemsCenter ? "items-center" : ""} ${
+                inputProps.contentCenter || inputProps.itemsCenter
+                  ? "d-flex"
+                  : ""
+              } ${
+                inputProps.contentClassName ? inputProps.contentClassName : ""
               }`}
             >
               {placeholder}
@@ -175,6 +261,72 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
           ) : (
             ""
           )}
+        </>
+      );
+    }
+  };
+
+  return (
+    <div
+      id={inputProps.id}
+      key={inputProps.key}
+      className={`glass-ui-input-container${
+        inputProps.className ? ` ${inputProps.className}` : ""
+      }`}
+    >
+      {label && (
+        <label className="glass-ui-input-label" style={{ color: labelColor }}>
+          {label}
+        </label>
+      )}
+      <div
+        ref={glassInputContainerRef}
+        className="glass-ui-container"
+        onMouseEnter={handleOnMouseEnter}
+        onMouseLeave={handleOnMouseLeave}
+        style={{
+          color: inputProps.color,
+          width: inputProps.width,
+          height: type === "range" ? 30 : height,
+          borderRadius: inputProps.borderRadius,
+          transform: style.transform,
+          transition: isHovered
+            ? "transform 80ms ease-out"
+            : "transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5)",
+          willChange: "transform",
+          zIndex: inputProps.zIndex,
+        }}
+      >
+        {renderLayers(
+          id,
+          inputProps.blur ?? 1,
+          inputProps.borderRadius ?? 8,
+          inputProps.saturation ?? 100,
+          inputProps.brightness ?? 100,
+          inputProps.distortion ?? 50,
+          inputProps.backgroundColor ?? "white",
+          inputProps.backgroundOpacity ?? 0,
+          style,
+          inputProps.innerLightOpacity ?? 0.2,
+          inputProps.outerLightOpacity ?? 0.2,
+          inputProps.borderColor ?? inputProps.innerLightColor ?? "white",
+          inputProps.borderSize ?? 1,
+          inputProps.borderOpacity ?? 1,
+          inputProps.chromaticAberration ?? 0,
+          inputProps.avoidSvgCreation ?? false,
+          type
+        )}
+        <div
+          ref={glassInputContentRef}
+          className="glass-ui-input-content"
+          style={{
+            display: type === "range" ? "flex" : "block",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: inputProps.borderRadius,
+          }}
+        >
+          {renderInput()}
         </div>
       </div>
     </div>

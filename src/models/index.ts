@@ -1,8 +1,9 @@
 interface CommonGlassProps {
   /** A unique identifier. */
   id?: string;
+  avoidSvgCreation?: boolean;
   /** Optional React key. */
-  key?: string;
+  key?: any;
   /** Input name attribute. */
   name?: string;
   /** Width of the component in pixels. */
@@ -11,16 +12,22 @@ interface CommonGlassProps {
   height?: number;
   /** Additional CSS class names for custom styling. */
   className?: string;
-  /** Centers content inside the component when true. */
+  /** Additional CSS class names for custom styling for contents. */
+  contentClassName?: string;
+  /** Centers content horizontally inside the component when true. */
   contentCenter?: boolean;
+  /** Centers content vertically inside the component when true. */
+  itemsCenter?: boolean;
   /** Amount of blur applied to the component background. */
   blur?: number;
   /** Strength of the distortion/displacement effect. */
   distortion?: number;
+  chromaticAberration?: number;
   /** Border radius of the component in pixels. */
   borderColor?: string;
   /** Thickness of the border in pixels. */
   borderRadius?: number;
+  borderOpacity?: number;
   /** Border color of the component. */
   borderSize?: number;
   color?: string;
@@ -34,6 +41,7 @@ interface CommonGlassProps {
   onHoverScale?: number;
   /** Saturation level of the content inside the component. */
   saturation?: number;
+  brightness?: number;
   /** Blur radius of the inner light/glow. */
   innerLightBlur?: number;
   /** Spread distance of the inner light effect. */
@@ -58,18 +66,9 @@ interface CommonGlassProps {
   onClick?: () => void;
 }
 
-export type GlassCardProps = CommonGlassProps & {
-  children?: React.ReactNode;
-};
-
-export interface GlassStyleModel {
-  transform: string;
-  innerBoxShadow: string;
-  outerBoxShadow: string;
-}
-
 export type GlassInputProps = CommonGlassProps & {
-  /** Input type, e.g., text, number, file, etc. */
+  value?: any;
+  /** Input type, e.g., text, number, file, range, etc. */
   type?: string;
   /** Maximum number of characters allowed. */
   maxLength?: number;
@@ -89,7 +88,23 @@ export type GlassInputProps = CommonGlassProps & {
   autofocus?: boolean;
   /** Optional change event handler. */
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  /** Minimum value for range/number inputs. */
+  min?: number;
+  /** Maximum value for range/number inputs. */
+  max?: number;
+  /** Step increment for range/number inputs. */
+  step?: number;
 };
+
+export type GlassCardProps = CommonGlassProps & {
+  children?: React.ReactNode;
+};
+
+export interface GlassStyleModel {
+  transform: string;
+  innerBoxShadow: string;
+  outerBoxShadow: string;
+}
 
 export type GlassButtonProps = CommonGlassProps & {
   /** Button content, usually text or icons. */
@@ -97,24 +112,26 @@ export type GlassButtonProps = CommonGlassProps & {
 };
 
 export const glassDefaultProps: Partial<CommonGlassProps> = {
-  contentCenter: false,
-  blur: 1,
-  distortion: 50,
-  borderRadius: 8,
+  blur: 2,
+  distortion: 20,
+  chromaticAberration: 0,
+  borderRadius: 10,
   borderSize: 1,
+  borderOpacity: 1,
   color: "white",
-  backgroundColor: "black",
+  backgroundColor: "white",
   backgroundOpacity: 0,
   flexibility: 0,
   onHoverScale: 1,
-  saturation: 100,
-  innerLightBlur: 20,
+  saturation: 120,
+  brightness: 100,
+  innerLightBlur: 10,
   innerLightSpread: 1,
   innerLightColor: "white",
-  innerLightOpacity: 0.2,
-  outerLightBlur: 20,
+  innerLightOpacity: 0,
+  outerLightBlur: 10,
   outerLightSpread: 1,
   outerLightColor: "white",
-  outerLightOpacity: 0.2,
-  padding: "10px 20px",
+  outerLightOpacity: 0,
+  padding: "10px",
 };

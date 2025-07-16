@@ -1,16 +1,8 @@
 .glass-ui-button-content {
   width: 100%;
   height: 100%;
-  z-index: 2;
+  z-index: 1;
   position: relative;
+  backface-visibility: hidden;
   cursor: pointer;
-}
-.glass-button {
-  height: 100%;
-  padding: 0;
-  position: absolute;
-  top: 0;
-  background: none;
-  border: none;
-  outline: none !important;
 }

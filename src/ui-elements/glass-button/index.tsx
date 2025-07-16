@@ -1,20 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   glassDefaultProps,
   type GlassButtonProps,
   type GlassStyleModel,
 } from "../../models";
-import { renderLayers } from "../../utils";
+import { calculateHoverEffect, renderLayers } from "../../utils";
 import "./glass-button.css";
 
 export const GlassButton: React.FunctionComponent<GlassButtonProps> = (
   props
 ) => {
   const {
-    height = 30,
+    contentCenter = true,
+    itemsCenter = true,
     children,
     ...buttonProps
   } = { ...glassDefaultProps, ...props };
+  const id = useMemo(() => buttonProps.id ?? crypto.randomUUID(), []);
   const glassButtonContainerRef = useRef<HTMLDivElement>(null);
   const glassButtonContentRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -25,55 +27,45 @@ export const GlassButton: React.FunctionComponent<GlassButtonProps> = (
   });
 
   useEffect(() => {
-    const card = glassButtonContainerRef.current;
-    if (!card || (buttonProps.flexibility && buttonProps.flexibility <= 0))
-      return;
+    const input = glassButtonContainerRef.current;
+    if (!input) return;
     const handleMouseMove = (e: MouseEvent) => {
-      if (buttonProps.flexibility && buttonProps.flexibility > 0) {
-        const rect = card.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const dx = e.clientX - centerX;
-        const dy = e.clientY - centerY;
-        const angle = Math.atan2(dy, dx);
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const scaleFactor = buttonProps.flexibility / 100;
-        const translateX = Math.cos(angle) * distance * scaleFactor;
-        const translateY = Math.sin(angle) * distance * scaleFactor;
-        let stretchX = 0;
-        let stretchY = 0;
-        if (buttonProps.onHoverScale) {
-          stretchX =
-            buttonProps.onHoverScale + Math.abs(translateX) / rect.width;
-          stretchY =
-            buttonProps.onHoverScale + Math.abs(translateY) / rect.height;
-        }
-        const shadowX = -translateX * 0.02;
-        const shadowY = -translateY * 0.02;
-        setStyle({
-          transform: `translate(${translateX}px, ${translateY}px) scale(${stretchX}, ${stretchY})`,
-          innerBoxShadow: `inset ${shadowX}px ${shadowY}px ${buttonProps.innerLightBlur}px ${buttonProps.innerLightSpread}px ${buttonProps.innerLightColor}`,
-          outerBoxShadow: `0 0 ${buttonProps.outerLightBlur}px ${buttonProps.outerLightSpread}px ${buttonProps.outerLightColor}`,
-        });
-      }
+      const result = calculateHoverEffect(e, input, buttonProps);
+      setStyle((prev) => ({
+        ...prev,
+        ...result,
+      }));
     };
     const reset = () => {
-      if (buttonProps.flexibility && buttonProps.flexibility > 0) {
-        setIsHovered(false);
-        setStyle({
-          transform: "none",
-          innerBoxShadow: `inset 0 0 ${buttonProps.innerLightBlur}px ${buttonProps.innerLightSpread}px ${buttonProps.innerLightColor}`,
-          outerBoxShadow: `0 0 ${buttonProps.outerLightBlur}px ${buttonProps.outerLightSpread}px ${buttonProps.outerLightColor}`,
-        });
-      }
+      setIsHovered(false);
+      setStyle({
+        transform: "none",
+        innerBoxShadow: `inset 0 0 ${buttonProps.innerLightBlur}px ${buttonProps.innerLightSpread}px ${buttonProps.innerLightColor}`,
+        outerBoxShadow: `0 0 ${buttonProps.outerLightBlur}px ${buttonProps.outerLightSpread}px ${buttonProps.outerLightColor}`,
+      });
     };
-    card.addEventListener("mousemove", handleMouseMove);
-    card.addEventListener("mouseleave", reset);
+    input.addEventListener("mousemove", handleMouseMove);
+    input.addEventListener("mouseleave", reset);
     return () => {
-      card.removeEventListener("mousemove", handleMouseMove);
-      card.removeEventListener("mouseleave", reset);
+      input.removeEventListener("mousemove", handleMouseMove);
+      input.removeEventListener("mouseleave", reset);
     };
-  }, [buttonProps.flexibility, buttonProps.onHoverScale, style]);
+  }, [style]);
+
+  useEffect(() => {
+    setStyle((prev) => ({
+      ...prev,
+      innerBoxShadow: `inset 0 0 ${buttonProps.innerLightBlur}px ${buttonProps.innerLightSpread}px ${buttonProps.innerLightColor}`,
+      outerBoxShadow: `0 0 ${buttonProps.outerLightBlur}px ${buttonProps.outerLightSpread}px ${buttonProps.outerLightColor}`,
+    }));
+  }, [
+    buttonProps.innerLightBlur,
+    buttonProps.innerLightSpread,
+    buttonProps.innerLightColor,
+    buttonProps.outerLightBlur,
+    buttonProps.outerLightSpread,
+    buttonProps.outerLightColor,
+  ]);
 
   const handleOnMouseEnter = () => {
     setIsHovered(true);
@@ -89,13 +81,16 @@ export const GlassButton: React.FunctionComponent<GlassButtonProps> = (
         id={buttonProps.id}
         key={buttonProps.key}
         ref={glassButtonContainerRef}
-        className={`glass-ui-container ${buttonProps.className}`}
+        className={`glass-ui-container ${
+          buttonProps.className ? buttonProps.className : ""
+        }`}
+        onClick={buttonProps.onClick}
         onMouseEnter={handleOnMouseEnter}
         onMouseLeave={handleOnMouseLeave}
         style={{
           color: buttonProps.color,
-          width: buttonProps.width,
-          height,
+          width: buttonProps.width ?? "100%",
+          height: buttonProps.height,
           borderRadius: buttonProps.borderRadius,
           transform: style.transform,
           transition: isHovered
@@ -106,41 +101,38 @@ export const GlassButton: React.FunctionComponent<GlassButtonProps> = (
         }}
       >
         {renderLayers(
-          buttonProps.blur ? buttonProps.blur : 1,
-          buttonProps.borderRadius ? buttonProps.borderRadius : 8,
-          buttonProps.saturation ? buttonProps.saturation : 100,
-          buttonProps.distortion ? buttonProps.distortion : 50,
-          buttonProps.backgroundColor ? buttonProps.backgroundColor : "white",
-          buttonProps.backgroundOpacity ? buttonProps.backgroundOpacity : 0,
+          id,
+          buttonProps.blur ?? 1,
+          buttonProps.borderRadius ?? 8,
+          buttonProps.saturation ?? 100,
+          buttonProps.brightness ?? 100,
+          buttonProps.distortion ?? 50,
+          buttonProps.backgroundColor ?? "white",
+          buttonProps.backgroundOpacity ?? 0,
           style,
-          buttonProps.innerLightOpacity ? buttonProps.innerLightOpacity : 0.2,
-          buttonProps.outerLightOpacity ? buttonProps.outerLightOpacity : 0.2,
-          buttonProps.borderColor
-            ? buttonProps.borderColor
-            : buttonProps.innerLightColor
-            ? buttonProps.innerLightColor
-            : "white",
-          buttonProps.borderSize ? buttonProps.borderSize : 1
+          buttonProps.innerLightOpacity ?? 0.2,
+          buttonProps.outerLightOpacity ?? 0.2,
+          buttonProps.borderColor ?? buttonProps.innerLightColor ?? "white",
+          buttonProps.borderSize ?? 1,
+          buttonProps.borderOpacity ?? 1,
+          buttonProps.chromaticAberration ?? 0,
+          buttonProps.avoidSvgCreation ?? false
         )}
         <div
           ref={glassButtonContentRef}
-          className="glass-ui-button-content"
+          className={`glass-ui-button-content ${
+            contentCenter ? "content-center" : ""
+          } ${itemsCenter ? "items-center" : ""} ${
+            contentCenter || itemsCenter ? "d-flex" : ""
+          } ${
+            buttonProps.contentClassName ? buttonProps.contentClassName : ""
+          }`}
           style={{
             padding: buttonProps.padding,
             borderRadius: buttonProps.borderSize,
           }}
-          onClick={buttonProps.onClick}
         >
-          <button
-            style={{
-              color: buttonProps.color,
-            }}
-            className={`glass-button ${
-              buttonProps.contentCenter ? "content-center" : ""
-            }`}
-          >
-            {children}
-          </button>
+          {children}
         </div>
       </div>
     </>

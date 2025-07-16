@@ -1,6 +1,8 @@
 .glass-ui-svg {
   width: 100%;
   height: 100%;
+  top: 0;
+  left: 0;
   position: absolute;
 }
 .glass-ui-outer-light {
@@ -10,7 +12,8 @@
   left: 0;
   z-index: -1;
   position: absolute;
-  transition: "500ms ease-in-out";
+  transition: box-shadow 0.2s ease-in-out;
+  will-change: box-shadow;
 }
 .glass-ui-distortion-layer {
   position: absolute;
@@ -32,7 +35,8 @@
   width: 100%;
   height: 100%;
   position: absolute;
-  transition: "500ms ease-in-out";
+  transition: box-shadow 0.2s ease-in-out;
+  will-change: box-shadow;
 }
 .glass-ui-border-layer {
   top: 0;
