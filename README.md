@@ -4,7 +4,7 @@ A customizable React component library for creating elegant **glassmorphism** in
 
 ## Live Demo / Playground
 
-**[View Live Demo](https://your-demo-url.com)**  
+**[View Live Demo](https://react-glass-ui.onrender.com)**  
   Try out the components in an interactive playground.
 
 ## Features
