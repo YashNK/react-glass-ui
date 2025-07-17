@@ -2,6 +2,11 @@
 
 A customizable React component library for creating elegant **glassmorphism** interfaces. It provides flexible, interactive UI elements, such as cards, buttons, and inputs, with effects including blur, saturation, distortion, light glow, and hover.
 
+## Live Demo / Playground
+
+**[View Live Demo](https://react-glass-ui.onrender.com)**  
+  Try out the components in an interactive playground.
+
 ## Features
 
 * GlassCard with distortion, glow, and hover flexibility
@@ -44,72 +49,88 @@ import { GlassInput } from "react-glass-ui";
 
 ## Shared Props (`CommonGlassProps`)
 
-These props are accepted by all components:
+All glass components accept these props:
 
-| Prop                | Type       | Description                                        |
-| ------------------- | ---------- | -------------------------------------------------- |
-| `id`                | `string`   | Unique identifier.                                 |
-| `key`               | `string`   | Optional React key.                                |
-| `name`              | `string`   | Input or component name.                           |
-| `width`             | `number`   | Width in pixels.                                   |
-| `height`            | `number`   | Height in pixels.                                  |
-| `className`         | `string`   | Additional class names.                            |
-| `contentCenter`     | `boolean`  | Centers child content.                             |
-| `blur`              | `number`   | Background blur level.                             |
-| `distortion`        | `number`   | Distortion intensity.                              |
-| `borderColor`       | `string`   | Border color.                                      |
-| `borderRadius`      | `number`   | Corner radius.                                     |
-| `borderSize`        | `number`   | Border thickness in pixels.                        |
-| `color`             | `string`   | Text color.                                        |
-| `backgroundColor`   | `string`   | Background color.                                  |
-| `backgroundOpacity` | `number`   | Background opacity (0 to 1).                       |
-| `flexibility`       | `number`   | Enables responsiveness to interaction/motion.      |
-| `onHoverScale`      | `number`   | Scale-up on hover (requires `flexibility > 0`).    |
-| `saturation`        | `number`   | Saturation of content.                             |
-| `innerLightBlur`    | `number`   | Inner glow blur radius.                            |
-| `innerLightSpread`  | `number`   | Inner glow spread distance.                        |
-| `innerLightColor`   | `string`   | Inner glow color.                                  |
-| `innerLightOpacity` | `number`   | Inner glow opacity (0 to 1).                       |
-| `outerLightBlur`    | `number`   | Outer glow blur radius.                            |
-| `outerLightSpread`  | `number`   | Outer glow spread distance.                        |
-| `outerLightColor`   | `string`   | Outer glow color.                                  |
-| `outerLightOpacity` | `number`   | Outer glow opacity (0 to 1).                       |
-| `padding`           | `string`   | Padding using CSS shorthand (e.g., `"10px 20px"`). |
-| `zIndex`            | `number`   | Component layering order.                          |
-| `onClick`           | `function` | Optional click handler.                            |
+| Prop                  | Type         | Description                                                               |
+| --------------------- | ------------ | ------------------------------------------------------------------------- |
+| `id`                  | `string`     | Unique identifier (useful for accessibility or testing).                  |
+| `key`                 | `any`        | React key (usually used in lists).                                        |
+| `name`                | `string`     | Input or component name (used in forms).                                  |
+| `width`               | `number`     | Component width in pixels.                                                |
+| `height`              | `number`     | Component height in pixels.                                               |
+| `className`           | `string`     | Extra CSS classes for the root element.                                   |
+| `contentClassName`    | `string`     | Extra CSS classes for the inner content container.                        |
+| `contentCenter`       | `boolean`    | Center content horizontally.                                              |
+| `itemsCenter`         | `boolean`    | Center content vertically.                                                |
+| `blur`                | `number`     | Background blur radius (e.g., `4` → `blur(4px)`).                         |
+| `distortion`          | `number`     | Distortion intensity (0–100, requires SVG filter).                        |
+| `chromaticAberration` | `number`     | Color fringing intensity (requires SVG filter).                           |
+| `brightness`          | `number`     | Brightness multiplier (e.g., 100 = normal, 80 = dim).                     |
+| `saturation`          | `number`     | Content saturation level (e.g., 100 = normal, 120 = vivid).               |
+| `borderRadius`        | `number`     | Corner radius in pixels.                                                  |
+| `borderSize`          | `number`     | Border thickness in pixels.                                               |
+| `borderColor`         | `string`     | Border color.                                                             |
+| `borderOpacity`       | `number`     | Border opacity (0 to 1).                                                  |
+| `backgroundColor`     | `string`     | Background color overlay.                                                 |
+| `backgroundOpacity`   | `number`     | Opacity of the background (0 to 1).                                       |
+| `color`               | `string`     | Text color for children.                                                  |
+| `innerLightBlur`      | `number`     | Inner glow blur radius.                                                   |
+| `innerLightSpread`    | `number`     | Inner glow spread distance (in px).                                       |
+| `innerLightColor`     | `string`     | Inner glow color.                                                         |
+| `innerLightOpacity`   | `number`     | Inner glow opacity (0 to 1).                                              |
+| `outerLightBlur`      | `number`     | Outer glow blur radius.                                                   |
+| `outerLightSpread`    | `number`     | Outer glow spread distance (in px).                                       |
+| `outerLightColor`     | `string`     | Outer glow color.                                                         |
+| `outerLightOpacity`   | `number`     | Outer glow opacity (0 to 1).                                              |
+| `flexibility`         | `number`     | Enables responsiveness to hover, motion, and distortion.                  |
+| `onHoverScale`        | `number`     | Scale multiplier on hover (requires `flexibility > 0`).                   |
+| `padding`             | `string`     | Padding (CSS shorthand, e.g. `"12px 16px"`).                              |
+| `zIndex`              | `number`     | Component stacking order.                                                 |
+| `avoidSvgCreation`    | `boolean`    | Skip SVG filter rendering (use only if you're handling filters manually). |
+| `onClick`             | `() => void` | Click handler.                                                            |
+
+---
 
 ## Component-Specific Props
 
 ### `<GlassCard />`
 
-| Prop       | Type        | Description              |
-| ---------- | ----------- | ------------------------ |
-| `children` | `ReactNode` | Content inside the card. |
+| Prop       | Type              | Description                        |
+| ---------- | ----------------- | ---------------------------------- |
+| `children` | `React.ReactNode` | Content to render inside the card. |
 
 > Inherits all **CommonGlassProps**
+
+---
 
 ### `<GlassButton />`
 
-| Prop       | Type        | Description                  |
-| ---------- | ----------- | ---------------------------- |
-| `children` | `ReactNode` | Button content (text/icons). |
+| Prop       | Type              | Description                        |
+| ---------- | ----------------- | ---------------------------------- |
+| `children` | `React.ReactNode` | Button content (text, icon, etc.). |
 
 > Inherits all **CommonGlassProps**
 
+---
+
 ### `<GlassInput />`
 
-| Prop          | Type                                       | Description                                |
-| ------------- | ------------------------------------------ | ------------------------------------------ |
-| `type`        | `string`                                   | Input type (`text`, `email`, `file`, etc.) |
-| `placeholder` | `string`                                   | Placeholder text.                          |
-| `label`       | `string`                                   | Label displayed above the input.           |
-| `labelColor`  | `string`                                   | Color of the label text.                   |
-| `maxLength`   | `number`                                   | Maximum number of characters.              |
-| `minLength`   | `number`                                   | Minimum number of characters.              |
-| `multiple`    | `boolean`                                  | Allow multiple files (for `file` input).   |
-| `required`    | `boolean`                                  | Marks the field as required.               |
-| `autofocus`   | `boolean`                                  | Autofocus on mount.                        |
-| `onChange`    | `(e: React.ChangeEvent<HTMLInputElement>)` | Input change event handler.                |
+| Prop          | Type                                       | Description                                    |
+| ------------- | ------------------------------------------ | ---------------------------------------------- |
+| `type`        | `string`                                   | Input type (`text`, `file`, `range`, etc.).    |
+| `value`       | `any`                                      | Current input value.                           |
+| `placeholder` | `string`                                   | Placeholder text.                              |
+| `label`       | `string`                                   | Optional label displayed above the input.      |
+| `labelColor`  | `string`                                   | Label text color.                              |
+| `maxLength`   | `number`                                   | Max character length (text input only).        |
+| `minLength`   | `number`                                   | Min character length.                          |
+| `min`         | `number`                                   | Minimum value (for `range`/`number` types).    |
+| `max`         | `number`                                   | Maximum value (for `range`/`number` types).    |
+| `step`        | `number`                                   | Step size (for `range`/`number` inputs).       |
+| `multiple`    | `boolean`                                  | Allows multiple file selection (`file` input). |
+| `required`    | `boolean`                                  | Marks the input as required.                   |
+| `autofocus`   | `boolean`                                  | Autofocus on mount.                            |
+| `onChange`    | `(e: React.ChangeEvent<HTMLInputElement>)` | Input change handler.                          |
 
 > Inherits all **CommonGlassProps**
 
