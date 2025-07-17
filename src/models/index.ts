@@ -1,68 +1,76 @@
 interface CommonGlassProps {
-  /** A unique identifier. */
+  /** A unique identifier for the component (used for accessibility or testing). */
   id?: string;
+  /** Avoids creating SVG filter layers (improves performance in heavy UIs). */
   avoidSvgCreation?: boolean;
-  /** Optional React key. */
+  /** Optional React key for list rendering. */
   key?: any;
-  /** Input name attribute. */
+  /** Name attribute for inputs, useful in forms. */
   name?: string;
   /** Width of the component in pixels. */
   width?: number;
   /** Height of the component in pixels. */
   height?: number;
-  /** Additional CSS class names for custom styling. */
+  /** Additional class names applied to the root element. */
   className?: string;
-  /** Additional CSS class names for custom styling for contents. */
+  /** Additional class names for the internal content container. */
   contentClassName?: string;
-  /** Centers content horizontally inside the component when true. */
+  /** If true, centers content horizontally using flex layout. */
   contentCenter?: boolean;
-  /** Centers content vertically inside the component when true. */
+  /** If true, centers content vertically using flex layout. */
   itemsCenter?: boolean;
-  /** Amount of blur applied to the component background. */
+  /** Background blur intensity in pixels (e.g. 2 = blur(2px)). */
   blur?: number;
-  /** Strength of the distortion/displacement effect. */
+  /** Strength of distortion effect via displacement map (0–100). */
   distortion?: number;
+  /** Chromatic aberration intensity (color fringing effect). */
   chromaticAberration?: number;
-  /** Border radius of the component in pixels. */
-  borderColor?: string;
-  /** Thickness of the border in pixels. */
+  /** Border radius of the component (in pixels). */
   borderRadius?: number;
+  /** Opacity of the border (0 to 1). */
   borderOpacity?: number;
-  /** Border color of the component. */
+  /** Border thickness in pixels. */
   borderSize?: number;
+  /** Border color of the component. */
+  borderColor?: string;
+  /** Text color inside the component. */
   color?: string;
-  /** Background color of the component. */
+  /** Background color of the glass layer. */
   backgroundColor?: string;
-  /** Opacity of the background color (0 to 1). */
+  /** Opacity of the background color overlay (0 to 1). */
   backgroundOpacity?: number;
-  /** Controls elastic movement; required for hover and distortion effects. */
+  /**
+   * Controls how elastic or responsive the glass effect feels.
+   * Required for hover scale and distortion responsiveness.
+   */
   flexibility?: number;
-  /** Enables a scaling effect when the component is hovered. Requires `flexibility` to be greater than 0. */
+  /** Multiplier for scaling when hovered (requires flexibility > 0). */
   onHoverScale?: number;
-  /** Saturation level of the content inside the component. */
+  /** Saturation level applied to content (e.g., 100 = normal, 120 = more vivid). */
   saturation?: number;
+  /** Brightness multiplier for the component (e.g., 100 = normal, 80 = dimmer). */
   brightness?: number;
-  /** Blur radius of the inner light/glow. */
+  /** Blur radius for the inner light/glow effect. */
   innerLightBlur?: number;
-  /** Spread distance of the inner light effect. */
+  /** Spread distance (in px) for the inner light effect. */
   innerLightSpread?: number;
-  /** Color of the inner light/glow. */
+  /** Color of the inner glow/light. */
   innerLightColor?: string;
-  /** Opacity of the inner light (0 to 1). */
+  /** Opacity of the inner glow (0 to 1). */
   innerLightOpacity?: number;
-  /** Blur radius of the outer light/glow. */
+  /** Blur radius for the outer light/glow effect. */
   outerLightBlur?: number;
-  /** Spread distance of the outer light effect. */
+  /** Spread distance (in px) for the outer glow effect. */
   outerLightSpread?: number;
-  /** Color of the outer light/glow. */
+  /** Color of the outer glow/light. */
   outerLightColor?: string;
-  /** Opacity of the outer light (0 to 1). */
+  /** Opacity of the outer glow (0 to 1). */
   outerLightOpacity?: number;
-  /** Padding inside the component (CSS shorthand string). */
+  /** Padding inside the component (uses CSS shorthand, e.g. "10px 20px"). */
   padding?: string;
-  /** Z-index of the component, controlling stacking order. */
+  /** Z-index value to control stacking order. */
   zIndex?: number;
-  /** Optional click event handler. */
+  /** Optional click handler for the component. */
   onClick?: () => void;
 }
 
@@ -97,6 +105,7 @@ export type GlassInputProps = CommonGlassProps & {
 };
 
 export type GlassCardProps = CommonGlassProps & {
+  /** Content inside the card (can be text, elements, etc.). */
   children?: React.ReactNode;
 };
 
