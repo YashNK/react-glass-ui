@@ -30,6 +30,7 @@
     "type": "git",
     "url": "https://github.com/YashNK/react-glass-ui"
   },
+  "homepage": "https://react-glass-ui.onrender.com",
   "exports": {
     "require": "./dist/index.cjs",
     "import": "./dist/index.mjs"
