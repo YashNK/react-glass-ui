@@ -39,7 +39,6 @@ export const renderLayers = (
   avoidSvgCreation: boolean,
   type?: string
 ) => {
-  console.log("rerender");
   return (
     <>
       {distortion && !avoidSvgCreation ? (
