@@ -16,7 +16,10 @@ export const GlassButton: React.FunctionComponent<GlassButtonProps> = (
     children,
     ...buttonProps
   } = { ...glassDefaultProps, ...props };
-  const id = useMemo(() => buttonProps.id ?? crypto.randomUUID(), []);
+  const id = useMemo(
+    () => buttonProps.id ?? crypto.randomUUID(),
+    [buttonProps.id]
+  );
   const glassButtonContainerRef = useRef<HTMLDivElement>(null);
   const glassButtonContentRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -27,14 +30,28 @@ export const GlassButton: React.FunctionComponent<GlassButtonProps> = (
   });
 
   useEffect(() => {
-    const input = glassButtonContainerRef.current;
-    if (!input) return;
-    const handleMouseMove = (e: MouseEvent) => {
-      const result = calculateHoverEffect(e, input, buttonProps);
+    const card = glassButtonContainerRef.current;
+    if (!card) return;
+    const getTouchPoint = (e: TouchEvent | MouseEvent) => {
+      if ("touches" in e && e.touches.length > 0) {
+        return {
+          clientX: e.touches[0].clientX,
+          clientY: e.touches[0].clientY,
+        };
+      }
+      return {
+        clientX: (e as MouseEvent).clientX,
+        clientY: (e as MouseEvent).clientY,
+      };
+    };
+    const handleMove = (e: any) => {
+      const point = getTouchPoint(e);
+      const result = calculateHoverEffect(point as any, card, buttonProps);
       setStyle((prev) => ({
         ...prev,
         ...result,
       }));
+      setIsHovered(true);
     };
     const reset = () => {
       setIsHovered(false);
@@ -44,11 +61,19 @@ export const GlassButton: React.FunctionComponent<GlassButtonProps> = (
         outerBoxShadow: `0 0 ${buttonProps.outerLightBlur}px ${buttonProps.outerLightSpread}px ${buttonProps.outerLightColor}`,
       });
     };
-    input.addEventListener("mousemove", handleMouseMove);
-    input.addEventListener("mouseleave", reset);
+    card.addEventListener("mousemove", handleMove);
+    card.addEventListener("mouseleave", reset);
+    card.addEventListener("touchstart", handleMove, { passive: true });
+    card.addEventListener("touchmove", handleMove, { passive: true });
+    card.addEventListener("touchend", reset);
+    card.addEventListener("touchcancel", reset);
     return () => {
-      input.removeEventListener("mousemove", handleMouseMove);
-      input.removeEventListener("mouseleave", reset);
+      card.removeEventListener("mousemove", handleMove);
+      card.removeEventListener("mouseleave", reset);
+      card.removeEventListener("touchstart", handleMove);
+      card.removeEventListener("touchmove", handleMove);
+      card.removeEventListener("touchend", reset);
+      card.removeEventListener("touchcancel", reset);
     };
   }, [style]);
 

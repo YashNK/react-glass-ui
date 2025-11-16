@@ -1,25 +1,39 @@
 ## React Glass UI
 
-A customizable React component library for creating elegant **glassmorphism** interfaces. It provides flexible, interactive UI elements, such as cards, buttons, and inputs, with effects including blur, saturation, distortion, light glow, and hover.
+A customizable React component library for building **liquid-glass** interfaces with dynamic, realistic fluid distortion. Powered by **advanced SVG filters**, the library simulates true refraction, blur, and chromatic distortion to create authentic glass-like surfaces. It offers flexible and interactive components such as cards, buttons, and inputs, featuring effects like blur, saturation, refraction-style distortion, dynamic lighting, and hover interactivity.
 
 ## Live Demo / Playground
 
 **[View Live Demo](https://react-glass-ui.onrender.com)**
 
-![Demo Screenshot](https://raw.githubusercontent.com/YashNK/react-glass-ui-homepage/refs/heads/main/public/images/react-glass-ui-demo-image.webp)
+![Demo Screenshot](https://raw.githubusercontent.com/YashNK/react-glass-ui-homepage/refs/heads/main/public/images/PatchV1.2.2.png)
 
-  Try out the components in an interactive playground.
+Try out the components in an interactive playground.
 
 ## Browser Support
 This library offers limited support across all modern browsers, but is optimized for Chrome for the best visual quality and performance.
 
 ## Features
 
-* GlassCard with distortion, glow, and hover flexibility
-* GlassButton with customizable light and motion effects
-* GlassInput with built-in label and glass styling
-* TypeScript support
-* Easily integrates into any layout or theme
+* Built using **custom SVG filter pipelines** for real liquid-glass distortion.
+* GlassCard with distortion, glow, and hover flexibility.
+* GlassButton with customizable light and motion effects.
+* GlassInput with built-in label and glass styling.
+* TypeScript support.
+* Easily integrates into any layout or theme.
+
+## How It Works
+
+React Glass UI uses a lightweight, custom-built **SVG filter system** to simulate realistic glass effects.  
+The filters include:
+
+- Gaussian blur layers  
+- Chromatic displacement  
+- Dynamic distortion mapping  
+- Adjustable refraction intensity  
+- Inner/outer light blending  
+
+This allows every component cards, buttons, inputs, sliders to render **true liquid-glass** behavior with smooth performance and no external dependencies.
 
 ## Installation
 
@@ -121,22 +135,24 @@ All glass components accept these props:
 
 ### `<GlassInput />`
 
-| Prop          | Type                                       | Description                                    |
-| ------------- | ------------------------------------------ | ---------------------------------------------- |
-| `type`        | `string`                                   | Input type (`text`, `file`, `range`, etc.).    |
-| `value`       | `any`                                      | Current input value.                           |
-| `placeholder` | `string`                                   | Placeholder text.                              |
-| `label`       | `string`                                   | Optional label displayed above the input.      |
-| `labelColor`  | `string`                                   | Label text color.                              |
-| `maxLength`   | `number`                                   | Max character length (text input only).        |
-| `minLength`   | `number`                                   | Min character length.                          |
-| `min`         | `number`                                   | Minimum value (for `range`/`number` types).    |
-| `max`         | `number`                                   | Maximum value (for `range`/`number` types).    |
-| `step`        | `number`                                   | Step size (for `range`/`number` inputs).       |
-| `multiple`    | `boolean`                                  | Allows multiple file selection (`file` input). |
-| `required`    | `boolean`                                  | Marks the input as required.                   |
-| `autofocus`   | `boolean`                                  | Autofocus on mount.                            |
-| `onChange`    | `(e: React.ChangeEvent<HTMLInputElement>)` | Input change handler.                          |
+| Prop                    | Type                                        | Description                                                       |
+| ----------------------- | ------------------------------------------- | ----------------------------------------------------------------- |
+| `type`                  | `string`                                    | Input type (`text`, `file`, `range`, etc.).                       |
+| `value`                 | `any`                                       | Current input value.                                              |
+| `placeholder`           | `string`                                    | Placeholder text.                                                 |
+| `label`                 | `string`                                    | Optional label displayed above the input.                         |
+| `labelColor`            | `string`                                    | Label text color.                                                 |
+| `maxLength`             | `number`                                    | Max character length (text input only).                           |
+| `minLength`             | `number`                                    | Min character length.                                             |
+| `min`                   | `number`                                    | Minimum value (for `range`/`number` types).                       |
+| `max`                   | `number`                                    | Maximum value (for `range`/`number` types).                       |
+| `step`                  | `number`                                    | Step size (for `range`/`number` inputs).                          |
+| `multiple`              | `boolean`                                   | Allows multiple file selection (`file` input).                    |
+| `required`              | `boolean`                                   | Marks the input as required.                                      |
+| `autofocus`             | `boolean`                                   | Autofocus on mount.                                               |
+| `inputRangeBlur`        | `number`                                    | Blur intensity applied only to the slider track/thumb.            |
+| `inputRangeDistortion`  | `number`                                    | Distortion strength applied to the liquid-glass range animation.  |
+| `onChange`              | `(e: React.ChangeEvent<HTMLInputElement>)`  | Input change handler.                                             |
 
 > Inherits all **CommonGlassProps**
 

@@ -27,6 +27,7 @@
   top: 0;
   left: 0;
   z-index: 0;
+  transition: background-color 0.2s ease-in, opacity 0.2s ease-in;
 }
 .glass-ui-inner-light {
   top: 0;
@@ -45,4 +46,12 @@
   width: 100%;
   height: 100%;
   position: absolute;
+}
+.glass-ui-border-layer,
+.glass-ui-inner-light,
+.glass-ui-background-layer,
+.glass-ui-distortion-layer,
+.glass-ui-outer-light,
+.glass-ui-svg {
+  pointer-events: none !important;
 }

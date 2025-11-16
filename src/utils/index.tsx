@@ -43,7 +43,6 @@ export const renderLayers = (
     <>
       {distortion && !avoidSvgCreation ? (
         <svg style={{ borderRadius }} className="glass-ui-svg">
-          {" "}
           <clipPath id={`${id}-clip`}>
             <rect
               x="0"
@@ -209,7 +208,7 @@ export const renderLayers = (
 };
 
 export function calculateHoverEffect(
-  e: MouseEvent,
+  e: { clientX: number; clientY: number },
   card: HTMLElement,
   props: LightEffectProps
 ): HoverEffectResult {

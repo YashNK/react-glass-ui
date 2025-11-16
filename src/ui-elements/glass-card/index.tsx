@@ -15,7 +15,7 @@ export const GlassCard: React.FunctionComponent<GlassCardProps> = (
     children,
     ...cardProps
   } = { ...glassDefaultProps, ...props };
-  const id = useMemo(() => cardProps.id ?? crypto.randomUUID(), []);
+  const id = useMemo(() => cardProps.id ?? crypto.randomUUID(), [cardProps.id]);
   const glassCardContainerRef = useRef<HTMLDivElement>(null);
   const glassCardContentRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -28,12 +28,26 @@ export const GlassCard: React.FunctionComponent<GlassCardProps> = (
   useEffect(() => {
     const card = glassCardContainerRef.current;
     if (!card) return;
-    const handleMouseMove = (e: MouseEvent) => {
-      const result = calculateHoverEffect(e, card, cardProps);
+    const getTouchPoint = (e: TouchEvent | MouseEvent) => {
+      if ("touches" in e && e.touches.length > 0) {
+        return {
+          clientX: e.touches[0].clientX,
+          clientY: e.touches[0].clientY,
+        };
+      }
+      return {
+        clientX: (e as MouseEvent).clientX,
+        clientY: (e as MouseEvent).clientY,
+      };
+    };
+    const handleMove = (e: any) => {
+      const point = getTouchPoint(e);
+      const result = calculateHoverEffect(point as any, card, cardProps);
       setStyle((prev) => ({
         ...prev,
         ...result,
       }));
+      setIsHovered(true);
     };
     const reset = () => {
       setIsHovered(false);
@@ -43,11 +57,19 @@ export const GlassCard: React.FunctionComponent<GlassCardProps> = (
         outerBoxShadow: `0 0 ${cardProps.outerLightBlur}px ${cardProps.outerLightSpread}px ${cardProps.outerLightColor}`,
       });
     };
-    card.addEventListener("mousemove", handleMouseMove);
+    card.addEventListener("mousemove", handleMove);
     card.addEventListener("mouseleave", reset);
+    card.addEventListener("touchstart", handleMove, { passive: true });
+    card.addEventListener("touchmove", handleMove, { passive: true });
+    card.addEventListener("touchend", reset);
+    card.addEventListener("touchcancel", reset);
     return () => {
-      card.removeEventListener("mousemove", handleMouseMove);
+      card.removeEventListener("mousemove", handleMove);
       card.removeEventListener("mouseleave", reset);
+      card.removeEventListener("touchstart", handleMove);
+      card.removeEventListener("touchmove", handleMove);
+      card.removeEventListener("touchend", reset);
+      card.removeEventListener("touchcancel", reset);
     };
   }, [style]);
 

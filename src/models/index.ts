@@ -73,7 +73,6 @@ interface CommonGlassProps {
   /** Optional click handler for the component. */
   onClick?: () => void;
 }
-
 export type GlassInputProps = CommonGlassProps & {
   value?: any;
   /** Input type, e.g., text, number, file, range, etc. */
@@ -102,31 +101,31 @@ export type GlassInputProps = CommonGlassProps & {
   max?: number;
   /** Step increment for range/number inputs. */
   step?: number;
+  /** Background blur intensity in pixels (e.g. 2 = blur(2px)). */
+  inputRangeBlur?: number;
+  /** Strength of distortion effect via displacement map (0–100). */
+  inputRangeDistortion?: number;
 };
-
 export type GlassCardProps = CommonGlassProps & {
   /** Content inside the card (can be text, elements, etc.). */
   children?: React.ReactNode;
 };
-
 export interface GlassStyleModel {
   transform: string;
   innerBoxShadow: string;
   outerBoxShadow: string;
 }
-
 export type GlassButtonProps = CommonGlassProps & {
   /** Button content, usually text or icons. */
   children?: React.ReactNode;
 };
-
 export const glassDefaultProps: Partial<CommonGlassProps> = {
   blur: 2,
-  distortion: 20,
+  distortion: 40,
   chromaticAberration: 0,
   borderRadius: 10,
   borderSize: 1,
-  borderOpacity: 1,
+  borderOpacity: 0.2,
   color: "white",
   backgroundColor: "white",
   backgroundOpacity: 0,

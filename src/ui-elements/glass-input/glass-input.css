@@ -59,6 +59,14 @@ input[type="file"] {
   pointer-events: none;
   transition: opacity 0.3s ease;
 }
+.glass-range-after-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.202);
+  pointer-events: none;
+  border-radius: 0 5px 5px 0;
+}
 .glass-range-thumb {
   width: 30px;
   height: 15px;

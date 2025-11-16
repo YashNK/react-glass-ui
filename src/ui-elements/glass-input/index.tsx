@@ -22,12 +22,18 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
     required = false,
     autofocus = false,
     onChange,
+    inputRangeBlur = 1,
+    inputRangeDistortion = 10,
     ...inputProps
   } = { ...glassDefaultProps, ...props };
-  const id = useMemo(() => inputProps.id ?? crypto.randomUUID(), []);
+  const id = useMemo(
+    () => inputProps.id ?? crypto.randomUUID(),
+    [inputProps.id]
+  );
   const glassInputContainerRef = useRef<HTMLDivElement>(null);
   const glassInputContentRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [rangeValue, setRangeValue] = useState<number>(0);
   const [style, setStyle] = useState<GlassStyleModel>({
     transform: "none",
     innerBoxShadow: `inset 0 0 ${inputProps.innerLightBlur}px ${inputProps.innerLightSpread}px ${inputProps.innerLightColor}`,
@@ -35,14 +41,32 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
   });
 
   useEffect(() => {
-    const input = glassInputContainerRef.current;
-    if (!input) return;
-    const handleMouseMove = (e: MouseEvent) => {
-      const result = calculateHoverEffect(e, input, inputProps);
+    setRangeValue(inputProps.value);
+  }, [inputProps.value]);
+
+  useEffect(() => {
+    const card = glassInputContainerRef.current;
+    if (!card) return;
+    const getTouchPoint = (e: TouchEvent | MouseEvent) => {
+      if ("touches" in e && e.touches.length > 0) {
+        return {
+          clientX: e.touches[0].clientX,
+          clientY: e.touches[0].clientY,
+        };
+      }
+      return {
+        clientX: (e as MouseEvent).clientX,
+        clientY: (e as MouseEvent).clientY,
+      };
+    };
+    const handleMove = (e: any) => {
+      const point = getTouchPoint(e);
+      const result = calculateHoverEffect(point as any, card, inputProps);
       setStyle((prev) => ({
         ...prev,
         ...result,
       }));
+      setIsHovered(true);
     };
     const reset = () => {
       setIsHovered(false);
@@ -52,11 +76,19 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
         outerBoxShadow: `0 0 ${inputProps.outerLightBlur}px ${inputProps.outerLightSpread}px ${inputProps.outerLightColor}`,
       });
     };
-    input.addEventListener("mousemove", handleMouseMove);
-    input.addEventListener("mouseleave", reset);
+    card.addEventListener("mousemove", handleMove);
+    card.addEventListener("mouseleave", reset);
+    card.addEventListener("touchstart", handleMove, { passive: true });
+    card.addEventListener("touchmove", handleMove, { passive: true });
+    card.addEventListener("touchend", reset);
+    card.addEventListener("touchcancel", reset);
     return () => {
-      input.removeEventListener("mousemove", handleMouseMove);
-      input.removeEventListener("mouseleave", reset);
+      card.removeEventListener("mousemove", handleMove);
+      card.removeEventListener("mouseleave", reset);
+      card.removeEventListener("touchstart", handleMove);
+      card.removeEventListener("touchmove", handleMove);
+      card.removeEventListener("touchend", reset);
+      card.removeEventListener("touchcancel", reset);
     };
   }, [style]);
 
@@ -87,7 +119,6 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
     if (type === "range") {
       const trackRef = useRef<HTMLDivElement>(null);
       const [dragging, setDragging] = useState(false);
-      const [rangeValue, setRangeValue] = useState(inputProps.value ?? 50);
       const min = inputProps.min ?? 0;
       const max = inputProps.max ?? 100;
       const step = inputProps.step ?? 1;
@@ -97,15 +128,33 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
         if (dragging) {
           window.addEventListener("mousemove", handleMouseMove);
           window.addEventListener("mouseup", handleMouseUp);
+          window.addEventListener("touchmove", handleTouchMove, {
+            passive: false,
+          });
+          window.addEventListener("touchend", handleMouseUp);
         } else {
           window.removeEventListener("mousemove", handleMouseMove);
           window.removeEventListener("mouseup", handleMouseUp);
+          window.removeEventListener("touchmove", handleTouchMove);
+          window.removeEventListener("touchend", handleMouseUp);
         }
         return () => {
           window.removeEventListener("mousemove", handleMouseMove);
           window.removeEventListener("mouseup", handleMouseUp);
+          window.removeEventListener("touchmove", handleTouchMove);
+          window.removeEventListener("touchend", handleMouseUp);
         };
       }, [dragging]);
+
+      const handleTouchStart = (e: React.TouchEvent) => {
+        setDragging(true);
+        updatePosition(e.touches[0].clientX);
+      };
+
+      const handleTouchMove = (e: TouchEvent) => {
+        e.preventDefault();
+        if (dragging) updatePosition(e.touches[0].clientX);
+      };
 
       const handleMouseDown = (e: React.MouseEvent) => {
         setDragging(true);
@@ -122,13 +171,11 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
         const track = trackRef.current;
         if (!track) return;
         const rect = track.getBoundingClientRect();
-        const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+        const x = Math.min(Math.max(clientX - rect.left - 10, 0), rect.width);
         const percent = x / rect.width;
-
         const clampedValue = min + percent * (max - min);
         const steppedValue = Math.round(clampedValue / step) * step;
         const newValue = Math.min(Math.max(steppedValue, min), max);
-
         setRangeValue(newValue);
         onChange?.({
           target: { value: newValue, name: inputProps.name },
@@ -140,29 +187,22 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
           className="glass-range-track"
           ref={trackRef}
           onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
         >
           <div
             className="glass-range-fill"
             style={{
               width: `${percent}%`,
-              backgroundColor: inputProps.backgroundColor
-                ? inputProps.backgroundColor
-                : inputProps.borderColor
-                ? inputProps.borderColor
-                : "white",
+              backgroundColor:
+                inputProps.backgroundColor ?? inputProps.borderColor ?? "white",
               opacity: dragging ? 0.7 : 1,
             }}
           />
           <div
             className="glass-range-after-fill"
             style={{
-              position: "absolute",
-              top: 0,
-              bottom: 0,
               left: `calc(${percent > 96 ? 96 : percent}% + 30px)`,
               width: `calc(${100 - percent}% - 30px)`,
-              backgroundColor: "rgba(255, 255, 255, 0.202)",
-              pointerEvents: "none",
             }}
           />
           <div
@@ -180,6 +220,7 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
               WebkitBackdropFilter: `blur(${inputProps.blur}px) saturate(${inputProps.saturation}%)`,
             }}
             onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
           />
           <div
             className="glass-range-thumb glass-range-border"
@@ -202,11 +243,11 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
               style={{
                 left: `calc(96% + 17px)`,
                 transform: `translate(-50%, -50%) scale(${dragging ? 1.4 : 1})`,
-                backgroundColor: inputProps.backgroundColor
-                  ? inputProps.backgroundColor
-                  : inputProps.borderColor
-                  ? inputProps.borderColor
-                  : "white",
+                backgroundColor:
+                  inputProps.color ??
+                  inputProps.backgroundColor ??
+                  inputProps.borderColor ??
+                  "white",
                 borderRadius: dragging
                   ? inputProps.borderRadius
                     ? inputProps.borderRadius + 1
@@ -299,11 +340,13 @@ export const GlassInput: React.FunctionComponent<GlassInputProps> = (
       >
         {renderLayers(
           id,
-          inputProps.blur ?? 1,
+          type === "range" ? inputRangeBlur ?? 1 : inputProps.blur ?? 2,
           inputProps.borderRadius ?? 8,
           inputProps.saturation ?? 100,
           inputProps.brightness ?? 100,
-          inputProps.distortion ?? 50,
+          type === "range"
+            ? inputRangeDistortion ?? 10
+            : inputProps.distortion ?? 50,
           inputProps.backgroundColor ?? "white",
           inputProps.backgroundOpacity ?? 0,
           style,
