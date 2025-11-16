@@ -1,6 +1,6 @@
 {
   "name": "react-glass-ui",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "Yash Kamnani",
   "license": "MIT",
   "description": "A customizable React component library for building liquid-glass interfaces with dynamic, realistic fluid distortion. Powered by advanced SVG filters, the library simulates true refraction, blur, and chromatic distortion to create authentic glass-like surfaces. It offers flexible and interactive components such as cards, buttons, and inputs, featuring effects like blur, saturation, refraction-style distortion, dynamic lighting, and hover interactivity.",
